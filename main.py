@@ -1,25 +1,30 @@
 """ MAC Converter Script """
 import tkinter as tk
 from tkinter import Button, Entry, filedialog, Label, messagebox
+from tkinter.constants import FALSE
 import pandas as pd
 import numpy as np
 
 window = tk.Tk()
 
 # Set global variables. Because I can. Global variables are cool. All the cool kids are using them.
+ICON = r"C:\\Users\\nicho\\Desktop\\Dev Projects\\MTA Converter\\logo_TRG.ico"
 PAD = '\t\t'
 DPAD = '\t\t\t\t'
 
 def open_file() -> str:
     """ Opens a file dialog box and prints path to console """
-    open_path = filedialog.askopenfilename(initialdir='/', title='Select File', filetypes=(
+    open_path = filedialog.askopenfilename(initialdir='/', title='Select MAC', filetypes=(
         ('xlsx files', '*.xlsx'), ('xls files', '*.xls'),
         ('csv files', '*.csv'), ('all files', '*.*')))
-    messagebox.showinfo('File Selected', open_path)
-    btn_generate2 =  Button(window, text='Generate XML', command=lambda: generate_xml(open_path), font=(
-    'helvetica', 13, 'bold'), width=20, bg='#fcba03', pady=5)
-    btn_generate2.grid(column=2, row=2)
-    return open_path
+    if open_path == '':
+        messagebox.showerror('Error', 'No file selected')
+    else:
+        messagebox.showinfo('File Selected', open_path)
+        btn_generate2 =  Button(window, text='Generate XML', command=lambda: generate_xml(open_path), font=(
+            'helvetica', 13, 'bold'), width=20, bg='#fcba03', pady=5)
+        btn_generate2.grid(column=2, row=2)
+        return open_path
 
 def generate_xml(open_path) -> None:
     """ Generates a MAC document in XML format or provides you with an error message """
@@ -77,13 +82,13 @@ def create_header(wp_id, wp_title, path) -> None:
     header_tmp += PAD + '<title>Maintenance Allocation Chart (MAC)</title>\n'
     header_tmp += '\t</wpidinfo>\n'
     header_tmp += '\t<mac>\n'
-    header_tmp += PAD + '<title>Maintenance Allocation Chart (MAC) for ' + \
+    header_tmp += PAD + '<title>Maintenance Allocation Chart for ' + \
         wp_title + '</title>\n'
 
     with open(f'{path}/{ent_wp_name.get()} MAC.xml', 'w', encoding="utf-8") as _f:
         _f.write(header_tmp)
 
-def maint_hours(ml_array):
+def maint_hours(ml_array) -> str:
     """ Function for maintenance hours. """
     # Array, sorry - "Python list" for maintainer levels.
     global ml_level
@@ -255,6 +260,12 @@ def create_body(open_path, path) -> None:
 window.title("Mark's MAC Converter")
 window.geometry('560x160')
 window.config(bg='#bdcff0')
+window.resizable(width=FALSE, height=FALSE)
+
+try:
+    window.iconbitmap(ICON)
+except tk.TclError:
+    pass
 
 lbl_wpid = Label(window, text='WP ID: ', font=('helvetica', 13, 'bold',), pady=5, bg='#bdcff0')
 lbl_wpid.grid(column=0, row=0)
@@ -263,14 +274,12 @@ lbl_wp_name = Label(window, text='WP Name: ', font=('helvetica', 13, 'bold'), pa
 lbl_wp_name.grid(column=0, row=1)
 
 ent_wp_id = Entry(window, width=40)
-# ent_wp_id.insert(0, 'S00003-9-4120-434')
 ent_wp_id.grid(column=1, row=0)
 
 ent_wp_name = Entry(window, width=40)
-# ent_wp_name.insert(0, '36K IECU')
 ent_wp_name.grid(column=1, row=1)
 
-btn_open =  Button(window, text='Select File', command=open_file, font=(
+btn_open =  Button(window, text='Select MAC', command=open_file, font=(
     'helvetica', 13, 'bold'), width=20, bg='#fcba03', pady=5)
 btn_open.grid(column=1, row=2)
 
