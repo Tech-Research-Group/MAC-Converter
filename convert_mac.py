@@ -263,11 +263,11 @@ lbl_wp_name = Label(window, text='WP Name: ', font=('helvetica', 13, 'bold'), pa
 lbl_wp_name.grid(column=0, row=1)
 
 ent_wp_id = Entry(window, width=40)
-ent_wp_id.insert(0, 'S00003-9-4120-434')
+# ent_wp_id.insert(0, 'S00003-9-4120-434')
 ent_wp_id.grid(column=1, row=0)
 
 ent_wp_name = Entry(window, width=40)
-ent_wp_name.insert(0, '36K IECU')
+# ent_wp_name.insert(0, '36K IECU')
 ent_wp_name.grid(column=1, row=1)
 
 btn_open =  Button(window, text='Select File', command=open_file, font=(
