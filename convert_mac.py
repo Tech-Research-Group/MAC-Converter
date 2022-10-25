@@ -1,10 +1,8 @@
 """ MAC Converter Script """
 import tkinter as tk
 from tkinter import Button, Entry, filedialog, Label, messagebox
-# import traceback
 import pandas as pd
 import numpy as np
-# from openpyxl import *
 
 window = tk.Tk()
 
@@ -28,7 +26,7 @@ def generate_xml(open_path) -> None:
     wp_id = ent_wp_id.get()
     wp_title = ent_wp_name.get()
     path = filedialog.askdirectory(initialdir="/", title="Select file")
-    print(str(path))
+    # print(str(path))
     if wp_id == '':
         # Shows error message
         messagebox.showerror('Missing WP ID', 'Error: WP ID is missing. Please try again!')
@@ -82,7 +80,7 @@ def create_header(wp_id, wp_title, path) -> None:
     header_tmp += PAD + '<title>Maintenance Allocation Chart (MAC) for ' + \
         wp_title + '</title>\n'
 
-    with open(path + '/' + ent_wp_name.get() + ' MAC.xml', 'w') as _f:
+    with open(f'{path}/{ent_wp_name.get()} MAC.xml', 'w', encoding="utf-8") as _f:
         _f.write(header_tmp)
 
 def maint_hours(ml_array):
@@ -175,7 +173,7 @@ def create_body(open_path, path) -> None:
             temp_str += DPAD + '\t</terefs>\n'
 
         if remark_refs != "nan":
-            print(f'Number: {row[0]} Name: {row[1]}')
+            # print(f'Number: {row[0]} Name: {row[1]}')
             rem_list = remark_refs.split(",")
             temp_str += DPAD + '\t<remarkrefs>\n'
             for _r in rem_list:
@@ -194,7 +192,7 @@ def create_body(open_path, path) -> None:
             if np.isnan(next_row[0]) == True:
                 temp_str += DPAD + '</qualify-2lvl>\n'
 
-        with open(path + '/' + ent_wp_name.get() + ' MAC.xml', 'a') as _f:
+        with open(f'{path}/{ent_wp_name.get()} MAC.xml', 'a', encoding="utf-8") as _f:
             _f.write(temp_str)
 
     # Creates tool list from existing tools_df
@@ -233,7 +231,7 @@ def create_body(open_path, path) -> None:
         end_str += PAD + '</teref-group>\n'
     end_str += '\t</tereqtab>\n'
 
-    with open(path + '/' + ent_wp_name.get() + ' MAC.xml', 'a') as end:
+    with open(f'{path}/{ent_wp_name.get()} MAC.xml', 'a', encoding="utf-8") as end:
         end.write(end_str)
 
     # Uses remarks spreadsheet to create and write xml in for remarks section.
@@ -251,7 +249,7 @@ def create_body(open_path, path) -> None:
     rem_str += '\t</remarktab>\n'
     rem_str += '</macwp>\n'
 
-    with open(path + '/' + ent_wp_name.get() + ' MAC.xml', 'a') as rem:
+    with open(f'{path}/{ent_wp_name.get()} MAC.xml', 'a', encoding="utf-8") as rem:
         rem.write(rem_str)
 
 window.title("Mark's MAC Converter")
