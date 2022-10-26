@@ -8,7 +8,7 @@ import numpy as np
 window = tk.Tk()
 
 # Set global variables. Because I can. Global variables are cool. All the cool kids are using them.
-ICON = r"C:\\Users\\nicho\\Desktop\\Dev Projects\\MTA Converter\\logo_TRG.ico"
+ICON = r"C:\\Users\\nicho\\Desktop\\Dev Projects\\MAC Converter\\logo_TRG.ico"
 PAD = '\t\t'
 DPAD = '\t\t\t\t'
 
