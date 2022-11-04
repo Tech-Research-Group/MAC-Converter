@@ -147,4 +147,6 @@ dmypy.json
 .history
 .ionide
 
-pyinstallers
+pyinstallers/
+.vscode/
+.idea/
