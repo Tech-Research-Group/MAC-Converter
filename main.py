@@ -26,9 +26,9 @@ def open_file() -> str:
     else:
         messagebox.showinfo('File Selected', open_path)
         btn_generate2 =  Button(window, text='Generate XML', \
-            command=lambda: generate_xml(open_path), font=('helvetica', 13, 'bold'), \
-                width=20, bg='#fcba03', pady=5)
-        btn_generate2.grid(column=2, row=2)
+            command=lambda: generate_xml(open_path), font=('helvetica', 13, 'bold'),
+                width=20, bg='#fcba03', padx=10)
+        btn_generate2.grid(column=3, row=1)
         return open_path
 
 def generate_xml(open_path) -> None:
@@ -256,27 +256,27 @@ def create_body(open_path, path) -> None:
         rem.write(rem_str)
 
 window.title("Mark's MAC Converter")
-window.geometry('560x160')
+window.geometry('550x100')
 window.config(bg='#bdcff0')
 window.resizable(width=FALSE, height=FALSE)
 
 with contextlib.suppress(tk.TclError):
     window.iconbitmap(ICON)
 
-lbl_wpid = Label(window, text='WP ID: ', font=('helvetica', 13, 'bold',), pady=5, bg='#bdcff0')
+lbl_wpid = Label(window, text='WP ID: ', font=('helvetica', 13, 'bold'), padx=10, pady=10, bg='#bdcff0')
 lbl_wpid.grid(column=0, row=0)
 
-lbl_wp_name = Label(window, text='WP Name: ', font=('helvetica', 13, 'bold'), pady=5, bg='#bdcff0')
+lbl_wp_name = Label(window, text='WP Name: ', font=('helvetica', 13, 'bold'), padx=10, pady=10, bg='#bdcff0')
 lbl_wp_name.grid(column=0, row=1)
 
-ent_wp_id = Entry(window, width=40)
-ent_wp_id.grid(column=1, row=0)
+ent_wp_id = Entry(window, width=20, font=('helvetica', 13, 'bold'))
+ent_wp_id.grid(column=1, row=0, padx=10)
 
-ent_wp_name = Entry(window, width=40)
-ent_wp_name.grid(column=1, row=1)
+ent_wp_name = Entry(window, width=20, font=('helvetica', 13, 'bold'))
+ent_wp_name.grid(column=1, row=1, padx=10)
 
 btn_open =  Button(window, text='Select MAC', command=open_file, font=(
-    'helvetica', 13, 'bold'), width=20, bg='#fcba03', pady=5)
-btn_open.grid(column=1, row=2)
+    'helvetica', 13, 'bold'), width=20, bg='#fcba03', padx=10)
+btn_open.grid(column=3, row=0)
 
 window.mainloop()
