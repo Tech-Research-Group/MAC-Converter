@@ -35,7 +35,7 @@ def generate_xml(open_path) -> None:
     """ Generates a MAC document in XML format or provides you with an error message """
     wp_id = ent_wp_id.get()
     wp_title = ent_wp_name.get()
-    path = filedialog.askdirectory(initialdir="/", title="Select file")
+    path = filedialog.askdirectory(initialdir="/", title="Generate XML")
     # print(str(path))
     if wp_id == '':
         # Shows error message
@@ -86,6 +86,7 @@ def create_header(wp_id, wp_title, path) -> None:
     header_tmp += '\t</wpidinfo>\n'
     header_tmp += '\t<mac>\n'
     header_tmp += f'{PAD}<title>Maintenance Allocation Chart for {wp_title}</title>\n'
+    # header_tmp += f'{PAD}</compassemgroup-2lvl>\n'
 
     with open(f'{path}/{ent_wp_name.get()} MAC.xml', 'w', encoding="utf-8") as _f:
         _f.write(header_tmp)
