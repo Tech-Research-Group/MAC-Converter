@@ -3,7 +3,6 @@ import tkinter as tk
 from tkinter import Button, Entry, filedialog, Label, messagebox
 from tkinter.constants import FALSE
 import contextlib
-import traceback
 import pandas as pd
 import numpy as np
 
@@ -13,8 +12,9 @@ window = tk.Tk()
 ICON = r"C:\\Users\\nicho\\Desktop\\Dev Projects\\MAC Converter\\logo_TRG.ico"
 PAD = '\t\t'
 DPAD = '\t\t\t\t'
-M_INDEX = 0
-ML_LEVEL = []
+m_index = 0
+ml_level = []
+
 
 def open_file() -> str:
     """ Opens a file dialog box and prints path to console """
@@ -25,11 +25,11 @@ def open_file() -> str:
         messagebox.showerror('Error', 'No file selected')
     else:
         messagebox.showinfo('File Selected', open_path)
-        btn_generate2 =  Button(window, text='Generate XML', \
-            command=lambda: generate_xml(open_path), font=('helvetica', 13, 'bold'),
-                width=20, bg='#fcba03', padx=10)
+        btn_generate2 = Button(window, text='Generate XML', command=lambda: generate_xml(
+            open_path), font=('helvetica', 13, 'bold'), width=20, bg='#fcba03', padx=10)
         btn_generate2.grid(column=3, row=1)
         return open_path
+
 
 def generate_xml(open_path) -> None:
     """ Generates a MAC document in XML format or provides you with an error message """
@@ -39,10 +39,12 @@ def generate_xml(open_path) -> None:
     # print(str(path))
     if wp_id == '':
         # Shows error message
-        messagebox.showerror('Missing WP ID', 'Error: WP ID is missing. Please try again!')
+        messagebox.showerror(
+            'Missing WP ID', 'Error: WP ID is missing. Please try again!')
     elif wp_title == '':
         # Shows error message
-        messagebox.showerror('Missing WP Name', 'Error: WP Name is missing. Please try again!')
+        messagebox.showerror(
+            'Missing WP Name', 'Error: WP Name is missing. Please try again!')
     else:
         create_header(wp_id, wp_title, path)
         create_body(open_path, path)
@@ -63,6 +65,7 @@ def get_tools(file_to_grab, sheet) -> str:
         tools_df.iloc[index, 1] = teref_str
     return tools_df
 
+
 def get_rems(rem_xls, sheet) -> str:
     """ Function to grab remarks list
         loads remarks excel file and converts it to a Pandas dataframe. """
@@ -75,6 +78,7 @@ def get_rems(rem_xls, sheet) -> str:
         rem_str += f'MAC_REM_{rem_id}'
         rem_df.iloc[index, 1] = rem_str
     return rem_df
+
 
 def create_header(wp_id, wp_title, path) -> None:
     """ Function to create xml header info. """
@@ -91,20 +95,23 @@ def create_header(wp_id, wp_title, path) -> None:
     with open(f'{path}/{ent_wp_name.get()} MAC.xml', 'w', encoding="utf-8") as _f:
         _f.write(header_tmp)
 
+
 def maint_hours(ml_array) -> str:
     """ Function for maintenance hours. """
     # Array, sorry - "Python list" for maintainer levels.
-    global ML_LEVEL
-    ML_LEVEL = ['c', 'f', 'h', 'd']
+    global ml_level
+    ml_level = ['c', 'f', 'h', 'd']
     temp_str = ''
     for _m in ml_array:
-        if not np.isnan(_m):
-            global M_INDEX
-            M_INDEX = ml_array.index(_m)  # Gets the index position
+        # if not np.isnan(_m):
+        if np.isnan(_m) == False:
+            global m_index
+            m_index = ml_array.index(_m)  # Gets the index position
             temp_str += f'{DPAD}\t<maintclass-2lvl>\n'
-            temp_str += f'{DPAD}{PAD}<{ML_LEVEL[M_INDEX]}>{str(_m)}</{ML_LEVEL[M_INDEX]}>\n'
+            temp_str += f'{DPAD}{PAD}<{ml_level[m_index]}>{str(_m)}</{ml_level[m_index]}>\n'
             temp_str += f'{DPAD}\t</maintclass-2lvl>\n'
     return temp_str
+
 
 def create_body(open_path, path) -> None:
     """ Creates the body of the MAC XML file. """
@@ -128,10 +135,11 @@ def create_body(open_path, path) -> None:
         teref = str(row[7])
         remark_refs = str(row[8])
 
-        if not np.isnan(row[0]) and close_row:
-            temp_str += f'{DPAD}</qualify-2lvl>\n'
-            temp_str += f'{PAD}\t</compassemgroup-2lvl>\n'
-            temp_str += f'{PAD}</mac-group-2lvl>\n'
+        if np.isnan(row[0]) == False:
+            if close_row == True:
+                temp_str += f'{DPAD}</qualify-2lvl>\n'
+                temp_str += f'{PAD}\t</compassemgroup-2lvl>\n'
+                temp_str += f'{PAD}</mac-group-2lvl>\n'
 
             # Takes the stupid period out of the cast string. It does this by dropping the row[0]
             # value into a variable and pulling the period out from there.
@@ -153,11 +161,12 @@ def create_body(open_path, path) -> None:
         temp_str += DPAD + '<qualify-2lvl>\n'
         # Added if/else statement to remove the func="nan" results from the xml file.
         if str(row[2]) != 'nan':
-            temp_str += f'{DPAD}\t<maintfunc func="{str(row[2]).lower()}"/>\n' # original line
+            # original line
+            temp_str += f'{DPAD}\t<maintfunc func="{str(row[2]).lower()}"/>\n'
         else:
             temp_str += f'{DPAD}\t<maintfunc func="none"/>\n'
             temp_str += f'{DPAD}\t<maintclass-2lvl>\n'
-            temp_str += f'{DPAD}{PAD}<{ML_LEVEL[M_INDEX]}/>\n'
+            temp_str += f'{DPAD}{PAD}<{ml_level[m_index]}/>\n'
             temp_str += f'{DPAD}\t</maintclass-2lvl>\n'
 
         # Runs maint_hours function on ml_array list
@@ -169,14 +178,14 @@ def create_body(open_path, path) -> None:
             tools_list = teref.split(",")
 
             for _e in tools_list:
-                # try:
-                _e = int(_e)
-                abd = tools_df.loc[tools_df['TOOLS OR TEST\nEQUIPMENT\nREF CODE'] == _e]
-                abd = abd.values.flatten()
-                temp_str += f'{DPAD}{PAD}<teref refs="{abd[1]}"/>\n'
-                # except: # pylint: disable=bare-except
-                #     traceback.print_exc()
-                #     # pass
+                try:
+                    # _e = int(_e)
+                    abd = tools_df.loc[tools_df['TOOLS OR TEST\nEQUIPMENT\nREF CODE'] == _e]
+                    abd = abd.values.flatten()
+                    temp_str += DPAD + PAD + '<teref refs="' + abd[1] + '"/>\n'
+                except:  # pylint: disable=bare-except
+                    #     traceback.print_exc()
+                    pass
             temp_str += f'{DPAD}\t</terefs>\n'
 
         if remark_refs != "nan":
@@ -184,19 +193,20 @@ def create_body(open_path, path) -> None:
             rem_list = remark_refs.split(",")
             temp_str += f'{DPAD}\t<remarkrefs>\n'
             for _r in rem_list:
-                # try:
-                # print(_r)
-                _rc = rem_df.loc[rem_df['REMARK CODE'] == _r]
-                _rc = _rc.values.flatten()
-                temp_str += f'{DPAD}{PAD}<remarkref refs="_rc[1]"/>\n'
-                # except: # pylint: disable=bare-except
-                #     traceback.print_exc()
-                #     # pass
+                try:
+                    # print(_r)
+                    _rc = rem_df.loc[rem_df['REMARK CODE'] == _r]
+                    _rc = _rc.values.flatten()
+                    temp_str += DPAD + PAD + \
+                        '<remarkref refs="' + _rc[1] + '"/>\n'
+                except:  # pylint: disable=bare-except
+                    # traceback.print_exc()
+                    pass
             temp_str += f'{DPAD}\t</remarkrefs>\n'
 
         if index + 1 < df_len:
             next_row = _df.iloc[index + 1]
-            if np.isnan(next_row[0]):
+            if np.isnan(next_row[0]) == True:
                 temp_str += f'{DPAD}</qualify-2lvl>\n'
 
         with open(f'{path}/{ent_wp_name.get()} MAC.xml', 'a', encoding="utf-8") as _f:
@@ -212,7 +222,8 @@ def create_body(open_path, path) -> None:
     end_str += f'{PAD}<title>Tools and Test Equipment for {ent_wp_name.get()}</title>\n'
 
     for index, row in tools_df.iterrows():
-        nsn = str(row[4])  # Converts the NSN (which is an int) to a string.
+        # nsn = str(row[4])  # Converts the NSN (which is an int) to a string.
+        nsn = str(row[4])
         if nsn != 'nan':
             # Grabs the first four characters of the NSN and convert it to a string called "fsc"
             fsc = nsn[:3]
@@ -233,7 +244,7 @@ def create_body(open_path, path) -> None:
         end_str += f'{DPAD}<fsc>{fsc}</fsc>\n'
         end_str += f'{DPAD}<niin>{niin}</niin>\n'
         end_str += f'{PAD}\t</nsn>\n'
-        end_str += f'{PAD}\t<toolno>{str(row[5])}</toolno>\n'
+        end_str += f'{PAD}\t<toolno>{row[5]}</toolno>\n'
         end_str += f'{PAD}</teref-group>\n'
     end_str += '\t</tereqtab>\n'
 
@@ -256,6 +267,7 @@ def create_body(open_path, path) -> None:
     with open(f'{path}/{ent_wp_name.get()} MAC.xml', 'a', encoding="utf-8") as rem:
         rem.write(rem_str)
 
+
 window.title("Mark's MAC Converter")
 window.geometry('550x100')
 window.config(bg='#bdcff0')
@@ -264,10 +276,12 @@ window.resizable(width=FALSE, height=FALSE)
 with contextlib.suppress(tk.TclError):
     window.iconbitmap(ICON)
 
-lbl_wpid = Label(window, text='WP ID: ', font=('helvetica', 13, 'bold'), padx=10, pady=10, bg='#bdcff0')
+lbl_wpid = Label(window, text='WP ID: ', font=(
+    'helvetica', 13, 'bold'), padx=10, pady=10, bg='#bdcff0')
 lbl_wpid.grid(column=0, row=0)
 
-lbl_wp_name = Label(window, text='WP Name: ', font=('helvetica', 13, 'bold'), padx=10, pady=10, bg='#bdcff0')
+lbl_wp_name = Label(window, text='WP Name: ', font=(
+    'helvetica', 13, 'bold'), padx=10, pady=10, bg='#bdcff0')
 lbl_wp_name.grid(column=0, row=1)
 
 ent_wp_id = Entry(window, width=20, font=('helvetica', 13, 'bold'))
@@ -276,7 +290,7 @@ ent_wp_id.grid(column=1, row=0, padx=10)
 ent_wp_name = Entry(window, width=20, font=('helvetica', 13, 'bold'))
 ent_wp_name.grid(column=1, row=1, padx=10)
 
-btn_open =  Button(window, text='Select MAC', command=open_file, font=(
+btn_open = Button(window, text='Select MAC', command=open_file, font=(
     'helvetica', 13, 'bold'), width=20, bg='#fcba03', padx=10)
 btn_open.grid(column=3, row=0)
 
